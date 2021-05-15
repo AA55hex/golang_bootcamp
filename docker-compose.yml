@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+    go_app:
+        build: ./server
+        ports: 
+            - 3000:3000
+        volumes: 
+            - ./server:/go/src/server
+        environment:
+            MYSQL_HOST: mysql
+            MYSQL_USER: book_manager
+            MYSQL_PASSWORD: pepega
+            MYSQL_DB: book_store
+        depends_on: 
+            - db
+        networks: 
+            - inner_host
+    
+    db:
+        image: mysql:8.0
+        container_name: mysql_docker
+        volumes:
+            - book_store_mysql_data:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: pseudo_pass
+            MYSQL_DATABASE: book_store
+            MYSQL_USER: book_manager
+            MYSQL_PASSWORD: pepega
+        networks: 
+            - inner_host
+networks:
+    inner_host:
+        driver: "bridge"
+volumes:
+    book_store_mysql_data:            
+        
+        
