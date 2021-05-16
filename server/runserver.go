@@ -1,30 +1,15 @@
 package main
 
 import (
-	"database/sql"
-	"log"
-
-	"github.com/AA55hex/golang_bootcamp/server/db/migrations"
-	"github.com/AA55hex/golang_bootcamp/server/db/session"
+	"github.com/AA55hex/golang_bootcamp/server/db/connection"
 )
 
 func main() {
 	// create database session
-	con, err := session.Create()
-	if err != nil {
-		log.Fatal(err)
+	if connection.GetSession() == nil {
 		return
 	}
-	defer con.Close()
+	// create router
 
-	// execute migration scripts
-	internalSQLDriver := con.Driver().(*sql.DB)
-	err = migrations.Migrate(internalSQLDriver)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	// get router
-	// ...
 	// listen & serve
 }
