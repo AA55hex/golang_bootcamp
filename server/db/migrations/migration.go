@@ -25,9 +25,13 @@ func Migrate(db *sql.DB) error {
 		return errors.New("migrate.NewWithDatabaseInstance: " + err.Error())
 	}
 	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
+	switch err = m.Up(); err {
+	case nil:
+		fmt.Println("Migrations executed")
+	case migrate.ErrNoChange:
+		fmt.Println("No migrations to execute")
+	default:
 		return errors.New("m.Steps: " + err.Error())
 	}
-	fmt.Println("Migrations executed")
 	return nil
 }
