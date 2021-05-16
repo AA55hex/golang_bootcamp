@@ -1,4 +1,4 @@
-package db_models
+package entity
 
 type Book struct {
 	Id     int32   `json,db:"id,omitempty"`
@@ -6,9 +6,4 @@ type Book struct {
 	Price  float32 `json:"price"`
 	Genre  int     `json:"genre"`
 	Amount int     `json:"amount"`
-}
-
-type Genre struct {
-	Id   int    `json,db:"id,omitempty"`
-	Name string `json:"name"`
 }
