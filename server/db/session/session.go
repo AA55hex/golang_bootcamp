@@ -17,6 +17,9 @@ func Create() (db.Session, error) {
 		Host:     `mysql_docker`,
 		User:     `root`,
 		Password: `pseudo_pass`,
+		Options: map[string]string{
+			"multiStatements": "true",
+		},
 	}
 	// open db session
 	fmt.Println("Try open session: ", db_settings)
