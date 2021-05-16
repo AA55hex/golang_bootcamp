@@ -9,6 +9,7 @@ func main() {
 	if connection.GetSession() == nil {
 		return
 	}
+	defer connection.GetSession().Close()
 	// create router
 
 	// listen & serve
