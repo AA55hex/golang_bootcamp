@@ -8,11 +8,11 @@ import (
 )
 
 type Book struct {
-	Id     int32   `json:"id,omitempty" db:"id,omitempty"`
-	Name   string  `json:"name" db:"name"`
-	Price  float32 `json:"price" db:"price"`
-	Genre  int     `json:"genre" db:"genre"`
-	Amount int     `json:"amount" db:"amount"`
+	Id     int32    `json:"id" db:"id,omitempty"`
+	Name   *string  `json:"name" db:"name"`
+	Price  *float32 `json:"price" db:"price"`
+	Genre  *int     `json:"genre" db:"genre"`
+	Amount *int     `json:"amount" db:"amount"`
 }
 
 // Full validate book for insertion to db
@@ -44,9 +44,9 @@ func (b *Book) Validate() error {
 // Returns nil on success
 func (b *Book) SimpleValidate() error {
 	switch {
-	case b.Price < 0:
+	case b.Price != nil && *b.Price < 0:
 		return errors.New("Bad price")
-	case b.Amount < 0:
+	case b.Amount != nil && *b.Amount < 0:
 		return errors.New("Bad amount")
 	default:
 		return nil
