@@ -15,7 +15,8 @@ type Book struct {
 	Amount int     `json:"amount"`
 }
 
-// Validate book for insertion to database
+// Full validate book for insertion to db
+// with db requests
 // Returns nil on success
 func (b *Book) Validate() error {
 	// is not unique
@@ -35,6 +36,13 @@ func (b *Book) Validate() error {
 	}
 
 	// simple validations
+	err := b.SimpleValidate()
+	return err
+}
+
+// Validation without db requests
+// Returns nil on success
+func (b *Book) SimpleValidate() error {
 	switch {
 	case b.Price < 0:
 		return errors.New("Bad price")
@@ -45,14 +53,14 @@ func (b *Book) Validate() error {
 	}
 }
 
-// Validate and trying to insert book object in database
+// Perform simple validation and trying to insert book object in database
 // If the operation succeeds, updates current
 // object with data from the newly inserted row
 // Returns nil on success
 func (b *Book) Insert() error {
 
-	if err := b.Validate(); err != nil {
-		return errors.New("Insert validation failed: " + err.Error())
+	if err := b.SimpleValidate(); err != nil {
+		return errors.New("Insert simple validation failed: " + err.Error())
 	}
 
 	books := connection.GetSession().Collection("book")
@@ -64,50 +72,28 @@ func (b *Book) Insert() error {
 	return nil
 }
 
-// Validate and trying to update book object in database
+// Perform simple validation and trying
+// to update book object in database
 // Returns nil on success
 func (b *Book) Update() error {
 	books := connection.GetSession().Collection("book")
-	genres := connection.GetSession().Collection("genre")
+
+	res := books.Find(db.Cond{"id": b.Id})
+	defer res.Close()
 
 	// check for existence
-	res := books.Find(db.Cond{"id": b.Id})
 	if count, _ := res.Count(); count != 1 {
 		return errors.New("Update validate failed: Book not found")
 	}
 
-	// get limited name for comparsion
-	var limited_name string
-	if len(b.Name) > 100 {
-		limited_name = b.Name[0:100]
-	} else {
-		limited_name = b.Name[0:len(b.Name)]
-	}
-
-	// check for name duplications
-	name_duplications, _ := books.
-		Find(db.Cond{"name": limited_name, "id !=": b.Id}).
-		Count()
-	if name_duplications != 0 {
-		return errors.New("Update validate failed: Name is not unique")
-	}
-
-	// check for genre existence
-	genre_existence, _ := genres.Find(db.Cond{"id": b.Genre}).Count()
-	if genre_existence != 0 {
-		return errors.New("Update validate failed: Bad genre id")
-	}
-
 	// simple validations
-	switch {
-	case b.Price < 0:
-		return errors.New("Update validate failed: Bad price")
-	case b.Amount < 0:
-		return errors.New("Update validate failed: Bad amount")
+	err := b.SimpleValidate()
+	if err != nil {
+		return errors.New("Update simple validate failed: " + err.Error())
 	}
 
 	// try to update
-	err := res.Update(b)
+	err = res.Update(b)
 	if err != nil {
 		return errors.New("Update failed: " + err.Error())
 	}
@@ -119,8 +105,10 @@ func (b *Book) Update() error {
 func (b *Book) Delete() error {
 	books := connection.GetSession().Collection("book")
 
-	// check for existence
 	res := books.Find(db.Cond{"id": b.Id})
+	defer res.Close()
+
+	// check for existence
 	if count, _ := res.Count(); count != 1 {
 		return errors.New("Delete validation failed: Book not found")
 	}
