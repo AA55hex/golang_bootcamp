@@ -8,11 +8,11 @@ import (
 )
 
 type Book struct {
-	Id     int32   `json,db:"id,omitempty"`
-	Name   string  `json:"name"`
-	Price  float32 `json:"price"`
-	Genre  int     `json:"genre"`
-	Amount int     `json:"amount"`
+	Id     int32   `json:"id,omitempty" db:"id,omitempty"`
+	Name   string  `json:"name" db:"name"`
+	Price  float32 `json:"price" db:"price"`
+	Genre  int     `json:"genre" db:"genre"`
+	Amount int     `json:"amount" db:"amount"`
 }
 
 // Full validate book for insertion to db
@@ -123,7 +123,7 @@ func (b *Book) Delete() error {
 
 // Finds book by id
 // Returns book, nil on success
-func GetBook(book_id int) (*Book, error) {
+func GetBook(book_id int32) (*Book, error) {
 	books := connection.GetSession().Collection("book")
 	result := &Book{}
 
