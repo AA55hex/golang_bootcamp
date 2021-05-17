@@ -120,3 +120,16 @@ func (b *Book) Delete() error {
 
 	return nil
 }
+
+// Finds book by id
+// Returns book, nil on success
+func GetBook(book_id int) (*Book, error) {
+	books := connection.GetSession().Collection("book")
+	result := &Book{}
+
+	err := books.Find(db.Cond{"id": book_id}).One(result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
