@@ -44,10 +44,14 @@ func (b *Book) Validate() error {
 // Returns nil on success
 func (b *Book) SimpleValidate() error {
 	switch {
-	case b.Price != nil && *b.Price < 0:
+	case b.Price == nil, *b.Price < 0:
 		return errors.New("Bad price")
-	case b.Amount != nil && *b.Amount < 0:
+	case b.Amount == nil, *b.Amount < 0:
 		return errors.New("Bad amount")
+	case b.Name == nil:
+		return errors.New("Bad name")
+	case b.Genre == nil:
+		return errors.New("Bad genre")
 	default:
 		return nil
 	}
