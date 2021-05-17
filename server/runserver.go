@@ -21,7 +21,9 @@ func main() {
 	// create router
 	fmt.Println("Creating router")
 	router := mux.NewRouter()
-	router.HandleFunc("/books/{id:[0-9]+}", handlers.GetBookByIdHandler)
+	router.HandleFunc("/books/{id:[0-9]+}", handlers.GetBookByIdHandler).Methods("GET")
+	router.HandleFunc("/books", handlers.GetBooksByFilterHandler).Methods("GET")
+	router.HandleFunc("/books/new", handlers.CreateBookHandler).Methods("POST")
 	// listen & serve
 	fmt.Println("Creating server")
 	server := http.Server{

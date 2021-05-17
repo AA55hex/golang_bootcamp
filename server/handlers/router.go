@@ -25,6 +25,26 @@ var GetBookByIdHandler = func(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(book)
 }
 
+var GetBooksByFilterHandler = func(w http.ResponseWriter, r *http.Request) {
+	// Getting and parsing filters
+	filters := FilterMap{}
+	var filter BookFilter
+	filters["name"] = r.URL.Query().Get("name")
+	filters["minPrice"] = r.URL.Query().Get("minPrice")
+	filters["maxPrice"] = r.URL.Query().Get("maxPrice")
+	filters["genre"] = r.URL.Query().Get("genre")
+	filter.Parse(filters)
+	books, err := GetBooks(&filter)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusFound)
+	w.Header().Add("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(books)
+
+}
+
 // Http handler for POST /books/new
 var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	book := &entity.Book{}
