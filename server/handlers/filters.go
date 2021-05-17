@@ -26,7 +26,7 @@ func (f *BookFilter) Parse(filters FilterMap) {
 	f.Name = filters["name"]
 	f.Price.Parse(filters)
 
-	genre, err := strconv.ParseInt(filters["minPrice"], 10, 32)
+	genre, err := strconv.ParseInt(filters["genre"], 10, 32)
 	if err == nil {
 		buff := int32(genre)
 		f.Genre = &buff
@@ -62,7 +62,7 @@ func GetBooks(filter *BookFilter) ([]entity.Book, error) {
 
 	// genre filtering
 	if filter.Genre != nil {
-		query = next_func("genre = ?", filter.Genre)
+		query = next_func("genre = ?", *filter.Genre)
 		next_func = query.And
 	}
 
