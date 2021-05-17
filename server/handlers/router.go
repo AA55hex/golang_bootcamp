@@ -65,7 +65,7 @@ var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(id))
 }
 
-// Http handler for PUT /books/1
+// Http handler for PUT /books/{id:[0-9]+}
 var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	book := &entity.Book{}
 	err := json.NewDecoder(r.Body).Decode(book)
@@ -87,4 +87,16 @@ var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	id := []byte(strconv.FormatInt(int64(book.Id), 10))
 	w.Write([]byte(id))
+}
+
+// Http handler for DELETE /books/{id:[0-9]+}
+var DeleteBookHandler = func(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)
+	err := entity.DeleteBook(int32(book_id))
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+	}
+	//http: superfluous response.WriteHeader call from github.com/AA55hex/golang_bootcamp/server/handlers.glob..func5 (router.go:100)
+	//w.WriteHeader(http.StatusNoContent)
 }
