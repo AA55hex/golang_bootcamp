@@ -137,3 +137,9 @@ func GetBook(book_id int32) (*Book, error) {
 	}
 	return result, nil
 }
+
+func DeleteBook(book_id int32) error {
+	book := Book{Id: int32(book_id)}
+	err := book.Delete()
+	return err
+}
