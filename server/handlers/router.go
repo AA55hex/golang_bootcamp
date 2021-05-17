@@ -64,3 +64,27 @@ var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	id := []byte(strconv.FormatInt(int64(book.Id), 10))
 	w.Write([]byte(id))
 }
+
+// Http handler for PUT /books/1
+var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
+	book := &entity.Book{}
+	err := json.NewDecoder(r.Body).Decode(book)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	vars := mux.Vars(r)
+	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)
+	book.Id = int32(book_id)
+
+	err = book.Update()
+	if err != nil {
+		w.WriteHeader(http.StatusConflict)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	id := []byte(strconv.FormatInt(int64(book.Id), 10))
+	w.Write([]byte(id))
+}
