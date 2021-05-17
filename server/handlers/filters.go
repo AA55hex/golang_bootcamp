@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/AA55hex/golang_bootcamp/server/db/connection"
 	"github.com/AA55hex/golang_bootcamp/server/db/entity"
 )
+
+type FilterMap map[string]string
 
 type PriceFilter struct {
 	minPrice *float32
@@ -17,8 +20,9 @@ type BookFilter struct {
 	Genre *int32
 }
 
-func (f *BookFilter) Parse(filters map[string]string) {
-	//get name
+// Parse into structure filter parameters
+func (f *BookFilter) Parse(filters FilterMap) {
+
 	f.Name = filters["name"]
 	f.Price.Parse(filters)
 
@@ -29,8 +33,10 @@ func (f *BookFilter) Parse(filters map[string]string) {
 	}
 }
 
-func (p *PriceFilter) Parse(filters map[string]string) {
+// Parse into structure filter parameters
+func (p *PriceFilter) Parse(filters FilterMap) {
 	minPrice, err := strconv.ParseFloat(filters["minPrice"], 32)
+
 	if err == nil {
 		buff := float32(minPrice)
 		p.minPrice = &buff
@@ -45,7 +51,6 @@ func (p *PriceFilter) Parse(filters map[string]string) {
 
 func GetBooks(filter *BookFilter) ([]entity.Book, error) {
 	query := connection.GetSession().SQL().SelectFrom("book")
-
 	// create variable to determine next query function
 	next_func := query.Where
 
@@ -64,23 +69,24 @@ func GetBooks(filter *BookFilter) ([]entity.Book, error) {
 	// prcie filtering
 	switch {
 	case filter.Price.minPrice != nil && filter.Price.maxPrice != nil:
-		query = next_func("genre between ? and ?",
-			filter.Price.minPrice,
-			filter.Price.maxPrice)
+		query = next_func("price between ? and ?",
+			*filter.Price.minPrice,
+			*filter.Price.maxPrice)
 		next_func = query.And
 	case filter.Price.minPrice != nil && filter.Price.maxPrice == nil:
-		query = next_func("genre > ", filter.Price.minPrice)
+		query = next_func("price > ?", *filter.Price.minPrice)
 		next_func = query.And
 	case filter.Price.minPrice == nil && filter.Price.maxPrice != nil:
-		query = next_func("genre < ", filter.Price.maxPrice)
+		query = next_func("price < ?", *filter.Price.maxPrice)
 		next_func = query.And
 	}
 
 	// check for 0 amoount
-	query = next_func("amount != ", "0")
+	query = next_func("amount != 0")
 
 	var result []entity.Book
-	err := query.All(result)
+	err := query.All(&result)
+	fmt.Println(query.String())
 	if err != nil {
 		return nil, err
 	}
