@@ -19,6 +19,28 @@ var GetBookByIdHandler = func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("404 page not found"))
 		return
 	}
+
 	w.WriteHeader(http.StatusFound)
+	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(book)
+}
+
+// Http handler for POST /books/new
+var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
+	book := &entity.Book{}
+	err := json.NewDecoder(r.Body).Decode(book)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = book.Insert()
+	if err != nil {
+		w.WriteHeader(http.StatusConflict)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	id := []byte(strconv.FormatInt(int64(book.Id), 10))
+	w.Write([]byte(id))
 }
