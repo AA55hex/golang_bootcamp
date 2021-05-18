@@ -12,9 +12,13 @@ import (
 
 // trying to execute migration scripts
 // todo: add .env support
-func try_migrate(db *sql.DB) error {
+func TryMigrate() error {
+	if session == nil {
+		return errors.New("Session not created")
+	}
 
 	log.Println("Starting migrations")
+	db := session.Driver().(*sql.DB)
 	driver, err := mysql.WithInstance(db, &mysql.Config{})
 	if err != nil {
 		return errors.New("mysql.WithInstance: " + err.Error())

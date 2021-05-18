@@ -1,29 +1,27 @@
 package connection
 
 import (
-	"database/sql"
+	"errors"
 	"log"
 	"time"
 
-	"github.com/AA55hex/golang_bootcamp/server/config"
 	"github.com/upper/db/v4"
 	"github.com/upper/db/v4/adapter/mysql"
 )
 
 var session db.Session
 
-// open database session & check for migrations
-// todo: add .env support
-func init() {
-	db_settings := mysql.ConnectionURL{
-		Database: config.MySQL.Database,
-		Host:     config.MySQL.Host,
-		User:     config.MySQL.User,
-		Password: config.MySQL.Password,
-		Options: map[string]string{
-			"multiStatements": "true",
-		},
+// OpenSession open database session
+// There is only one db session at the same time
+// Returns session, nil on success
+func OpenSession(db_settings mysql.ConnectionURL) (db.Session, error) {
+	if session != nil {
+		return session, errors.New("Session already exists")
 	}
+	if db_settings.Options == nil {
+		db_settings.Options = make(map[string]string)
+	}
+	db_settings.Options["multiStatements"] = "true"
 	var err error
 	// open db session
 	log.Println("Connection: ", db_settings)
@@ -41,16 +39,9 @@ func init() {
 		}
 	}
 	if session == nil {
-		return
+		return nil, errors.New("Session not created")
 	}
-	// try migrate
-	internalSQLDriver := session.Driver().(*sql.DB)
-	err = try_migrate(internalSQLDriver)
-	if err != nil {
-		session.Close()
-		session = nil
-		log.Print(err)
-	}
+	return session, nil
 }
 
 func GetSession() db.Session {
