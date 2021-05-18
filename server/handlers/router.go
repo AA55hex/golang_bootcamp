@@ -9,8 +9,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Http handler for GET /books/{id:[0-9]+}
-var GetBookByIdHandler = func(w http.ResponseWriter, r *http.Request) {
+// GetBookByIDHandler is http handler for GET /books/{id:[0-9]+}
+var GetBookByIDHandler = func(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)
 	book, _ := entity.GetBook(int32(book_id))
@@ -25,6 +25,7 @@ var GetBookByIdHandler = func(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(book)
 }
 
+// GetBooksByFilterHandler is http handler for GET /books with filtres
 var GetBooksByFilterHandler = func(w http.ResponseWriter, r *http.Request) {
 	// Getting and parsing filters
 	filters := FilterMap{}
@@ -45,7 +46,7 @@ var GetBooksByFilterHandler = func(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Http handler for POST /books/new
+// CreateBookHandler is http handler for POST /books/new
 var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	book := &entity.Book{}
 	err := json.NewDecoder(r.Body).Decode(book)
@@ -65,7 +66,7 @@ var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(id))
 }
 
-// Http handler for PUT /books/{id:[0-9]+}
+// UpdateBookHandler is http handler for PUT /books/{id:[0-9]+}
 var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	book := &entity.Book{}
 	err := json.NewDecoder(r.Body).Decode(book)
@@ -89,7 +90,7 @@ var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(id))
 }
 
-// Http handler for DELETE /books/{id:[0-9]+}
+// DeleteBookHandler is http handler for DELETE /books/{id:[0-9]+}
 var DeleteBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)

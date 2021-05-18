@@ -8,12 +8,16 @@ import (
 	"github.com/AA55hex/golang_bootcamp/server/db/entity"
 )
 
+// FilterMap is map type for filter values
+// using for BookFilter parsing
 type FilterMap map[string]string
 
 type PriceFilter struct {
 	minPrice *float32
 	maxPrice *float32
 }
+
+// BookFilter is filter for GetBooks func
 type BookFilter struct {
 	Name  string
 	Price PriceFilter
@@ -49,6 +53,7 @@ func (p *PriceFilter) Parse(filters FilterMap) {
 	}
 }
 
+// GetBooks create sql-query for db and returns result on success
 func GetBooks(filter *BookFilter) ([]entity.Book, error) {
 	query := connection.GetSession().SQL().SelectFrom("book")
 	// create variable to determine next query function

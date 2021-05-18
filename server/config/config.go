@@ -22,6 +22,7 @@ var Server struct {
 	Address string
 }
 
+// simple func for setting env variable into string variable
 func set_env(env_var *string, env_string string, default_string string) {
 	var ok bool
 	*env_var, ok = os.LookupEnv(env_string)
@@ -30,8 +31,9 @@ func set_env(env_var *string, env_string string, default_string string) {
 	}
 }
 
+// Init all env variables from configs.env
 func init() {
-	fmt.Println("Loading .env")
+	fmt.Println("Loading configs.env")
 	if err := godotenv.Load("configs.env"); err != nil {
 		log.Println("No .env file found: ", err)
 	}
