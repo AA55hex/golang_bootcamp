@@ -13,16 +13,16 @@ import (
 )
 
 func main() {
-	// create database session
+	// check database session
 	if connection.GetSession() == nil {
 		log.Fatal("Database session not created")
 	}
 	defer connection.GetSession().Close()
 
-	// create router
+	// init router
 	fmt.Println("Creating router")
 	router := mux.NewRouter()
-	router.HandleFunc("/books/{id:[0-9]+}", handlers.GetBookByIdHandler).Methods("GET")
+	router.HandleFunc("/books/{id:[0-9]+}", handlers.GetBookByIDHandler).Methods("GET")
 	router.HandleFunc("/books/{id:[0-9]+}", handlers.UpdateBookHandler).Methods("PUT")
 	router.HandleFunc("/books/{id:[0-9]+}", handlers.DeleteBookHandler).Methods("DELETE")
 	router.HandleFunc("/books", handlers.GetBooksByFilterHandler).Methods("GET")
