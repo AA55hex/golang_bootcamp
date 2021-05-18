@@ -20,7 +20,7 @@ func main() {
 		User:     config.MySQL.User,
 		Password: config.MySQL.Password,
 	}
-	_, err := connection.OpenSession(db_settings)
+	_, err := connection.OpenSession(&db_settings)
 	if err != nil {
 		log.Fatal("Session not created: ", err)
 	}

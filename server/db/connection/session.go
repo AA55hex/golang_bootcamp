@@ -14,7 +14,7 @@ var session db.Session
 // OpenSession open database session
 // There is only one db session at the same time
 // Returns session, nil on success
-func OpenSession(db_settings mysql.ConnectionURL) (db.Session, error) {
+func OpenSession(db_settings *mysql.ConnectionURL) (db.Session, error) {
 	if session != nil {
 		return session, errors.New("Session already exists")
 	}
