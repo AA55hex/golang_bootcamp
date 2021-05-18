@@ -14,7 +14,7 @@ var session db.Session
 // OpenSession open database session
 // There is only one db session at the same time
 // Returns session, nil on success
-func OpenSession(db_settings *mysql.ConnectionURL) (db.Session, error) {
+func OpenSession(db_settings *mysql.ConnectionURL, retries int) (db.Session, error) {
 	if session != nil {
 		return session, errors.New("Session already exists")
 	}
@@ -25,7 +25,7 @@ func OpenSession(db_settings *mysql.ConnectionURL) (db.Session, error) {
 	var err error
 	// open db session
 	log.Println("Connection: ", db_settings)
-	for i := 0; i < 30; i++ {
+	for i := 0; i < retries; i++ {
 		log.Print("Try open session ", i, ": ")
 
 		session, err = mysql.Open(db_settings)
