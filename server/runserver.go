@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -27,13 +26,13 @@ func main() {
 	}
 	defer connection.GetSession().Close()
 
-	err = connection.TryMigrate()
+	err = connection.TryMigrate(config.MySQL.MigrationSource)
 	if err != nil {
 		log.Fatal("Migration error: ", err)
 	}
 
 	// init router
-	fmt.Println("Creating router")
+	log.Println("Creating router")
 	router := mux.NewRouter()
 	router.HandleFunc("/books/{id:[0-9]+}", handlers.GetBookByIDHandler).Methods("GET")
 	router.HandleFunc("/books/{id:[0-9]+}", handlers.UpdateBookHandler).Methods("PUT")
@@ -42,14 +41,14 @@ func main() {
 	router.HandleFunc("/books/new", handlers.CreateBookHandler).Methods("POST")
 
 	// listen & serve
-	fmt.Println("Creating server")
+	log.Println("Creating server")
 	server := http.Server{
 		Handler:      router,
 		Addr:         config.Server.Address,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	fmt.Println("Server created.")
-	fmt.Println("Listening started on: ", server.Addr)
+	log.Println("Server created.")
+	log.Println("Listening started on: ", server.Addr)
 	log.Fatal(server.ListenAndServe())
 }
