@@ -12,7 +12,7 @@ import (
 
 // trying to execute migration scripts
 // todo: add .env support
-func TryMigrate() error {
+func TryMigrate(migrations_source string) error {
 	if session == nil {
 		return errors.New("Session not created")
 	}
@@ -24,7 +24,7 @@ func TryMigrate() error {
 		return errors.New("mysql.WithInstance: " + err.Error())
 	}
 
-	m, err := migrate.NewWithDatabaseInstance("file://db/migrations/", "mysql", driver)
+	m, err := migrate.NewWithDatabaseInstance(migrations_source, "mysql", driver)
 	if err != nil {
 		return errors.New("migrate.NewWithDatabaseInstance: " + err.Error())
 	}
