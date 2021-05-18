@@ -23,7 +23,7 @@ var Server struct {
 }
 
 // simple func for setting env variable into string variable
-func set_env_string(env_var *string, env_string string, default_string string) {
+func setEnvString(env_var *string, env_string string, default_string string) {
 	var ok bool
 	*env_var, ok = os.LookupEnv(env_string)
 	if !ok {
@@ -32,7 +32,7 @@ func set_env_string(env_var *string, env_string string, default_string string) {
 }
 
 // simple func for setting env variable into int variable
-func set_env_int(env_var *int, env_string string, default_int int) {
+func setEnvInt(env_var *int, env_string string, default_int int) {
 	str, ok := os.LookupEnv(env_string)
 	buff, err := strconv.ParseInt(str, 10, 32)
 	switch {
@@ -57,12 +57,12 @@ func init() {
 		log.Println("No .env file found: ", err)
 	}
 
-	set_env_string(&MySQL.Host, "MYSQL_HOST", "localhost:3306")
-	set_env_string(&MySQL.Database, "MYSQL_DB", "")
-	set_env_string(&MySQL.User, "MYSQL_USER", "root")
-	set_env_string(&MySQL.Password, "MYSQL_PASSOWRD", "")
-	set_env_string(&MySQL.MigrationSource, "MIGRATION_SOURCE", "file:///migrations/")
-	set_env_string(&Server.Address, "SERVER_ADDRESS", "localhost:8000")
+	setEnvString(&MySQL.Host, "MYSQL_HOST", "localhost:3306")
+	setEnvString(&MySQL.Database, "MYSQL_DB", "")
+	setEnvString(&MySQL.User, "MYSQL_USER", "root")
+	setEnvString(&MySQL.Password, "MYSQL_PASSOWRD", "")
+	setEnvString(&MySQL.MigrationSource, "MIGRATION_SOURCE", "file:///migrations/")
+	setEnvString(&Server.Address, "SERVER_ADDRESS", "localhost:8000")
 
-	set_env_int(&MySQL.ConnectionTryCount, "CONNECTION_TRY_COUNT", 50)
+	setEnvInt(&MySQL.ConnectionTryCount, "CONNECTION_TRY_COUNT", 50)
 }
