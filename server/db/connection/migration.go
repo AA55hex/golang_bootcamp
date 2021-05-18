@@ -10,8 +10,8 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-// trying to execute migration scripts
-// todo: add .env support
+// Trying to execute migration scripts from migrations_source
+// Returns nil on success
 func TryMigrate(migrations_source string) error {
 	if session == nil {
 		return errors.New("Session not created")
