@@ -2,7 +2,7 @@ package connection
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/AA55hex/golang_bootcamp/server/config"
@@ -26,17 +26,17 @@ func init() {
 	}
 	var err error
 	// open db session
-	fmt.Println("Connection: ", db_settings)
+	log.Println("Connection: ", db_settings)
 	for i := 0; i < 30; i++ {
-		fmt.Print("Try open session ", i, ": ")
+		log.Print("Try open session ", i, ": ")
 
 		session, err = mysql.Open(db_settings)
 		if err != nil {
-			fmt.Println("FAIL.")
-			fmt.Println("Error", err)
+			log.Println("FAIL.")
+			log.Println("Error", err)
 			time.Sleep(3 * time.Second)
 		} else {
-			fmt.Println("SUCCESS!")
+			log.Println("SUCCESS!")
 			break
 		}
 	}
@@ -49,7 +49,7 @@ func init() {
 	if err != nil {
 		session.Close()
 		session = nil
-		fmt.Print(err)
+		log.Print(err)
 	}
 }
 

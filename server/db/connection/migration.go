@@ -3,7 +3,7 @@ package connection
 import (
 	"database/sql"
 	"errors"
-	"fmt"
+	"log"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
@@ -14,7 +14,7 @@ import (
 // todo: add .env support
 func try_migrate(db *sql.DB) error {
 
-	fmt.Println("Starting migrations")
+	log.Println("Starting migrations")
 	driver, err := mysql.WithInstance(db, &mysql.Config{})
 	if err != nil {
 		return errors.New("mysql.WithInstance: " + err.Error())
@@ -28,9 +28,9 @@ func try_migrate(db *sql.DB) error {
 	err = m.Up()
 	switch err = m.Up(); err {
 	case nil:
-		fmt.Println("Migrations executed")
+		log.Println("Migrations executed")
 	case migrate.ErrNoChange:
-		fmt.Println("No migrations to execute")
+		log.Println("No migrations to execute")
 	default:
 		return errors.New("m.Steps: " + err.Error())
 	}
