@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -25,32 +26,46 @@ type BookFilter struct {
 }
 
 // Parse into structure filter parameters
-func (f *BookFilter) Parse(filters FilterMap) {
+func (f *BookFilter) Parse(filters FilterMap) error {
 
 	f.Name = filters["name"]
 	f.Price.Parse(filters)
 
-	genre, err := strconv.ParseInt(filters["genre"], 10, 32)
-	if err == nil {
-		buff := int32(genre)
-		f.Genre = &buff
+	if filters["genre"] != "" {
+		genre64, err := strconv.ParseInt(filters["genre"], 10, 32)
+		if err != nil {
+			return errors.New("Bad genre")
+		}
+		genre32 := int32(genre64)
+		f.Genre = &genre32
 	}
+	return nil
 }
 
 // Parse into structure filter parameters
-func (p *PriceFilter) Parse(filters FilterMap) {
-	minPrice, err := strconv.ParseFloat(filters["minPrice"], 32)
+// Returns nil on success
+func (p *PriceFilter) Parse(filters FilterMap) error {
+	if filters["minPrice"] != "" {
+		minPrice, err := strconv.ParseFloat(filters["minPrice"], 32)
 
-	if err == nil {
+		if err != nil {
+			return errors.New("Bad minPrice")
+		}
 		buff := float32(minPrice)
 		p.minPrice = &buff
+
 	}
 
-	maxPrice, err := strconv.ParseFloat(filters["maxPrice"], 32)
-	if err == nil {
+	if filters["minPrice"] != "" {
+		maxPrice, err := strconv.ParseFloat(filters["minPrice"], 32)
+		if err != nil {
+			return errors.New("Bad maxPrice")
+		}
 		buff := float32(maxPrice)
 		p.maxPrice = &buff
 	}
+
+	return nil
 }
 
 // GetBooks create sql-query for db and returns result on success

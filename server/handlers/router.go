@@ -34,12 +34,21 @@ var GetBooksByFilterHandler = func(w http.ResponseWriter, r *http.Request) {
 	filters["minPrice"] = r.URL.Query().Get("minPrice")
 	filters["maxPrice"] = r.URL.Query().Get("maxPrice")
 	filters["genre"] = r.URL.Query().Get("genre")
-	filter.Parse(filters)
-	books, err := GetBooks(&filter)
+
+	err := filter.Parse(filters)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
+
+	books, err := GetBooks(&filter)
+	if err != nil {
+		w.WriteHeader(http.StatusGone)
+		w.Write([]byte("Database request fail"))
+		return
+	}
+
 	w.WriteHeader(http.StatusFound)
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(books)
