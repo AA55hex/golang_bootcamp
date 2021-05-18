@@ -72,37 +72,31 @@ func (p *PriceFilter) Parse(filters FilterMap) error {
 func GetBooks(filter *BookFilter) ([]entity.Book, error) {
 	query := connection.GetSession().SQL().SelectFrom("book")
 	// create variable to determine next query function
-	next_func := query.Where
+
+	// check for 0 amoount
+	query = query.Where("amount != 0")
 
 	// name filtering
 	if filter.Name != "" {
-		query = next_func("name = ?", filter.Name)
-		next_func = query.And
+		query = query.And("name = ?", filter.Name)
 	}
 
 	// genre filtering
 	if filter.Genre != nil {
-		query = next_func("genre = ?", *filter.Genre)
-		next_func = query.And
+		query = query.And("genre = ?", *filter.Genre)
 	}
 
 	// prcie filtering
 	switch {
 	case filter.Price.minPrice != nil && filter.Price.maxPrice != nil:
-		query = next_func("price between ? and ?",
+		query = query.And("price between ? and ?",
 			*filter.Price.minPrice,
 			*filter.Price.maxPrice)
-		next_func = query.And
 	case filter.Price.minPrice != nil && filter.Price.maxPrice == nil:
-		query = next_func("price > ?", *filter.Price.minPrice)
-		next_func = query.And
+		query = query.And("price > ?", *filter.Price.minPrice)
 	case filter.Price.minPrice == nil && filter.Price.maxPrice != nil:
-		query = next_func("price < ?", *filter.Price.maxPrice)
-		next_func = query.And
+		query = query.And("price < ?", *filter.Price.maxPrice)
 	}
-
-	// check for 0 amoount
-	query = next_func("amount != 0")
 
 	var result []entity.Book
 	err := query.All(&result)
