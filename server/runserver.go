@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/AA55hex/golang_bootcamp/server/config"
 	"github.com/AA55hex/golang_bootcamp/server/db/connection"
 	"github.com/AA55hex/golang_bootcamp/server/handlers"
 	"github.com/gorilla/mux"
@@ -30,7 +31,7 @@ func main() {
 	fmt.Println("Creating server")
 	server := http.Server{
 		Handler:      router,
-		Addr:         ":3000",
+		Addr:         config.Server.Address,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

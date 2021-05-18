@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/AA55hex/golang_bootcamp/server/config"
 	"github.com/upper/db/v4"
 	"github.com/upper/db/v4/adapter/mysql"
 )
@@ -15,10 +16,10 @@ var session db.Session
 // todo: add .env support
 func init() {
 	db_settings := mysql.ConnectionURL{
-		Database: `book_store`,
-		Host:     `mysql_docker`,
-		User:     `root`,
-		Password: `pseudo_pass`,
+		Database: config.MySQL.Database,
+		Host:     config.MySQL.Host,
+		User:     config.MySQL.User,
+		Password: config.MySQL.Password,
 		Options: map[string]string{
 			"multiStatements": "true",
 		},
