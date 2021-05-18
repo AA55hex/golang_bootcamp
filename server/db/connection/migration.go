@@ -21,12 +21,12 @@ func TryMigrate(migrations_source string) error {
 	db := session.Driver().(*sql.DB)
 	driver, err := mysql.WithInstance(db, &mysql.Config{})
 	if err != nil {
-		return errors.New("mysql.WithInstance: " + err.Error())
+		return err
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(migrations_source, "mysql", driver)
 	if err != nil {
-		return errors.New("migrate.NewWithDatabaseInstance: " + err.Error())
+		return err
 	}
 
 	err = m.Up()
@@ -36,7 +36,7 @@ func TryMigrate(migrations_source string) error {
 	case migrate.ErrNoChange:
 		log.Println("No migrations to execute")
 	default:
-		return errors.New("m.Steps: " + err.Error())
+		return err
 	}
 
 	return nil
