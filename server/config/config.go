@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -28,7 +27,10 @@ func setEnvString(env_var *string, env_string string, default_string string) {
 	*env_var, ok = os.LookupEnv(env_string)
 	if !ok {
 		*env_var = default_string
+		log.Println(env_string, ":\t\tdefault.")
+		return
 	}
+	log.Println(env_string, ":\t\t", *env_var)
 }
 
 // simple func for setting env variable into int variable
@@ -38,21 +40,21 @@ func setEnvInt(env_var *int, env_string string, default_int int) {
 	switch {
 	case !ok:
 		*env_var = default_int
-		fmt.Println(env_var, ": set to default.")
+		log.Println(env_string, ": default.")
 		return
 	case err != nil:
 		*env_var = default_int
-		fmt.Println("Bad ", env_var, ": ", buff, ". Set to default.")
+		log.Println("Bad ", env_string, ": ", buff, ". Set to default.")
 	default:
 		*env_var = int(buff)
-		fmt.Println(env_var, ": ", buff)
+		log.Println(env_string, ":\t\t", buff)
 	}
 	return
 }
 
 // Init all env variables from configs.env
 func init() {
-	fmt.Println("Loading configs.env")
+	log.Println("Loading configs.env")
 	if err := godotenv.Load("configs.env"); err != nil {
 		log.Println("No .env file found: ", err)
 	}
