@@ -10,20 +10,29 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func jsonResponse(w http.ResponseWriter, httpStatus int, jsonBody interface{}) error {
+	w.WriteHeader(httpStatus)
+	w.Header().Add("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(jsonBody)
+	return err
+}
+
+func textResponse(w http.ResponseWriter, httpStatus int, body []byte) {
+	w.WriteHeader(httpStatus)
+	w.Write(body)
+}
+
 // GetBookByIDHandler is http handler for GET /books/{id:[0-9]+}
 var GetBookByIDHandler = func(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)
 	book, _ := entity.GetBook(int32(book_id), connection.GetSession())
 	if book == nil {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("404 page not found"))
+		textResponse(w, http.StatusNotFound, nil)
 		return
 	}
 
-	w.WriteHeader(http.StatusFound)
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(book)
+	jsonResponse(w, http.StatusFound, book)
 }
 
 // GetBooksByFilterHandler is http handler for GET /books with filtres
@@ -38,21 +47,17 @@ var GetBooksByFilterHandler = func(w http.ResponseWriter, r *http.Request) {
 
 	err := filter.Parse(filters)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		textResponse(w, http.StatusBadRequest, []byte(err.Error()))
 		return
 	}
 
 	books, err := GetBooks(&filter)
 	if err != nil {
-		w.WriteHeader(http.StatusGone)
-		w.Write([]byte("Database request fail"))
+		textResponse(w, http.StatusGone, []byte("Server error"))
 		return
 	}
 
-	w.WriteHeader(http.StatusFound)
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(books)
+	jsonResponse(w, http.StatusFound, books)
 
 }
 
@@ -61,19 +66,18 @@ var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	book := &entity.Book{}
 	err := json.NewDecoder(r.Body).Decode(book)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		textResponse(w, http.StatusBadRequest, []byte(err.Error()))
 		return
 	}
 
 	err = book.Insert(connection.GetSession())
 	if err != nil {
-		w.WriteHeader(http.StatusConflict)
+		textResponse(w, http.StatusBadRequest, []byte(err.Error()))
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
 	id := []byte(strconv.FormatInt(int64(book.Id), 10))
-	w.Write([]byte(id))
+	textResponse(w, http.StatusCreated, id)
 }
 
 // UpdateBookHandler is http handler for PUT /books/{id:[0-9]+}
@@ -81,7 +85,7 @@ var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	book := &entity.Book{}
 	err := json.NewDecoder(r.Body).Decode(book)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		textResponse(w, http.StatusBadRequest, []byte(err.Error()))
 		return
 	}
 
@@ -91,13 +95,12 @@ var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 
 	err = book.Update(connection.GetSession())
 	if err != nil {
-		w.WriteHeader(http.StatusConflict)
+		textResponse(w, http.StatusBadRequest, []byte(err.Error()))
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	id := []byte(strconv.FormatInt(int64(book.Id), 10))
-	w.Write([]byte(id))
+	textResponse(w, http.StatusBadRequest, id)
 }
 
 // DeleteBookHandler is http handler for DELETE /books/{id:[0-9]+}
@@ -106,8 +109,8 @@ var DeleteBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)
 	err := entity.DeleteBook(int32(book_id), connection.GetSession())
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
+		textResponse(w, http.StatusNotFound, []byte(err.Error()))
 	}
-	//http: superfluous response.WriteHeader call from github.com/AA55hex/golang_bootcamp/server/handlers.glob..func5 (router.go:100)
-	//w.WriteHeader(http.StatusNoContent)
+	/// http: superfluous response.WriteHeader
+	// w.WriteHeader(http.StatusNoContent)
 }
