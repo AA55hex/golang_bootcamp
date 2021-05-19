@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/AA55hex/golang_bootcamp/server/db/connection"
@@ -29,7 +28,11 @@ type BookFilter struct {
 func (f *BookFilter) Parse(filters FilterMap) error {
 
 	f.Name = filters["name"]
-	f.Price.Parse(filters)
+
+	err := f.Price.Parse(filters)
+	if err != nil {
+		return err
+	}
 
 	if filters["genre"] != "" {
 		genre64, err := strconv.ParseInt(filters["genre"], 10, 32)
@@ -56,8 +59,8 @@ func (p *PriceFilter) Parse(filters FilterMap) error {
 
 	}
 
-	if filters["minPrice"] != "" {
-		maxPrice, err := strconv.ParseFloat(filters["minPrice"], 32)
+	if filters["maxPrice"] != "" {
+		maxPrice, err := strconv.ParseFloat(filters["maxPrice"], 32)
 		if err != nil {
 			return errors.New("Bad maxPrice")
 		}
@@ -100,7 +103,6 @@ func GetBooks(filter *BookFilter) ([]entity.Book, error) {
 
 	var result []entity.Book
 	err := query.All(&result)
-	fmt.Println(query.String())
 	if err != nil {
 		return nil, err
 	}
