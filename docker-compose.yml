@@ -8,9 +8,9 @@ services:
         volumes: 
             - ./server:/go/src/server
         environment:
-            MYSQL_HOST: mysql
-            MYSQL_USER: book_manager
-            MYSQL_PASSWORD: pepega
+            MYSQL_HOST: mysql_docker
+            MYSQL_USER: root
+            MYSQL_PASSWORD: pseudo_pass
             MYSQL_DB: book_store
         depends_on: 
             - db
@@ -18,15 +18,13 @@ services:
             - inner_host
     
     db:
-        image: mysql:8.0
+        image: mysql:latest
         container_name: mysql_docker
         volumes:
             - book_store_mysql_data:/var/lib/mysql
         environment:
             MYSQL_ROOT_PASSWORD: pseudo_pass
             MYSQL_DATABASE: book_store
-            MYSQL_USER: book_manager
-            MYSQL_PASSWORD: pepega
         networks: 
             - inner_host
 networks:
