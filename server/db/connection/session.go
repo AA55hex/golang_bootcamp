@@ -28,18 +28,18 @@ func OpenSession(db_settings *mysql.ConnectionURL, retries int) (db.Session, err
 	for i := 0; i < retries; i++ {
 		log.Print("Try open session ", i, ": ")
 
-		session, err = mysql.Open(db_settings)
+		session, err = adapter.Open(db_settings)
 		if err != nil {
 			log.Println("FAIL.")
 			log.Println("Error", err)
 			time.Sleep(3 * time.Second)
 		} else {
-			log.Println("SUCCESS!")
+			log.Println("Success!")
 			break
 		}
 	}
 	if session == nil {
-		return nil, errors.New("Session not created")
+		return nil, err
 	}
 	return session, nil
 }
