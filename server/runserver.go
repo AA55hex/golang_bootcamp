@@ -13,6 +13,10 @@ import (
 )
 
 func main() {
+	err := config.LoadConfigs("configs.env")
+	if err != nil {
+		log.Fatal("configs.env file not found: ", err)
+	}
 	// creating database session
 	db_settings := mysql.ConnectionURL{
 		Database: config.MySQL.Database,
@@ -20,7 +24,7 @@ func main() {
 		User:     config.MySQL.User,
 		Password: config.MySQL.Password,
 	}
-	_, err := connection.OpenSession(&db_settings, config.MySQL.ConnectionTryCount)
+	_, err = connection.OpenSession(&db_settings, config.MySQL.ConnectionTryCount)
 	if err != nil {
 		log.Fatal("Session not created: ", err)
 	}

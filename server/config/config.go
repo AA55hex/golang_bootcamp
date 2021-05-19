@@ -52,11 +52,10 @@ func setEnvInt(env_var *int, env_string string, default_int int) {
 	return
 }
 
-// Init all env variables from configs.env
-func init() {
-	log.Println("Loading configs.env")
-	if err := godotenv.Load("configs.env"); err != nil {
-		log.Println("No .env file found: ", err)
+func LoadConfigs(path string) error {
+	log.Println("Loading ", path)
+	if err := godotenv.Load(path); err != nil {
+		return err
 	}
 
 	setEnvString(&MySQL.Host, "MYSQL_HOST", "localhost:3306")
@@ -67,4 +66,5 @@ func init() {
 	setEnvString(&Server.Address, "SERVER_ADDRESS", "localhost:8000")
 
 	setEnvInt(&MySQL.ConnectionTryCount, "CONNECTION_TRY_COUNT", 50)
+	return nil
 }
