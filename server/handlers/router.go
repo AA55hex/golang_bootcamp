@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/AA55hex/golang_bootcamp/server/db/connection"
 	"github.com/AA55hex/golang_bootcamp/server/db/entity"
 	"github.com/gorilla/mux"
 )
@@ -13,7 +14,7 @@ import (
 var GetBookByIDHandler = func(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)
-	book, _ := entity.GetBook(int32(book_id))
+	book, _ := entity.GetBook(int32(book_id), connection.GetSession())
 	if book == nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("404 page not found"))
@@ -64,7 +65,7 @@ var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = book.Insert()
+	err = book.Insert(connection.GetSession())
 	if err != nil {
 		w.WriteHeader(http.StatusConflict)
 		return
@@ -88,7 +89,7 @@ var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)
 	book.Id = int32(book_id)
 
-	err = book.Update()
+	err = book.Update(connection.GetSession())
 	if err != nil {
 		w.WriteHeader(http.StatusConflict)
 		return
@@ -103,7 +104,7 @@ var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 var DeleteBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)
-	err := entity.DeleteBook(int32(book_id))
+	err := entity.DeleteBook(int32(book_id), connection.GetSession())
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 	}
