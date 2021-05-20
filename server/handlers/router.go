@@ -58,7 +58,6 @@ var GetBooksByFilterHandler = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonResponse(w, http.StatusFound, books)
-
 }
 
 // CreateBookHandler is http handler for POST /books/new
@@ -111,6 +110,5 @@ var DeleteBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		textResponse(w, http.StatusNotFound, []byte(err.Error()))
 	}
-	/// http: superfluous response.WriteHeader
-	// w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusNoContent)
 }
