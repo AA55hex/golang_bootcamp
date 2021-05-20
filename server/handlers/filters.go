@@ -37,7 +37,7 @@ func (f *BookFilter) Parse(filters FilterMap) error {
 	if filters["genre"] != "" {
 		genre64, err := strconv.ParseInt(filters["genre"], 10, 32)
 		if err != nil {
-			return errors.New("Bad genre")
+			return errors.New("bad genre")
 		}
 		genre32 := int32(genre64)
 		f.Genre = &genre32
@@ -52,7 +52,7 @@ func (p *PriceFilter) Parse(filters FilterMap) error {
 		minPrice, err := strconv.ParseFloat(filters["minPrice"], 32)
 
 		if err != nil {
-			return errors.New("Bad minPrice")
+			return errors.New("bad minPrice")
 		}
 		buff := float32(minPrice)
 		p.minPrice = &buff
@@ -62,7 +62,7 @@ func (p *PriceFilter) Parse(filters FilterMap) error {
 	if filters["maxPrice"] != "" {
 		maxPrice, err := strconv.ParseFloat(filters["maxPrice"], 32)
 		if err != nil {
-			return errors.New("Bad maxPrice")
+			return errors.New("bad maxPrice")
 		}
 		buff := float32(maxPrice)
 		p.maxPrice = &buff
