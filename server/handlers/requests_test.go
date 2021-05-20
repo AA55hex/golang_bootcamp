@@ -34,11 +34,11 @@ func init() {
 	config.LoadConfigs("../configs.env")
 	db_settings := mysql.ConnectionURL{
 		Database: config.MySQL.Database,
-		Host:     config.MySQL.Host,
+		Host:     "localhost:3306",
 		User:     config.MySQL.User,
 		Password: config.MySQL.Password,
 	}
-	session, err := connection.OpenSession(&db_settings, 1)
+	session, err := connection.OpenSession(&db_settings, 50)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -272,7 +272,6 @@ func TestGetBooksByFilterHandler(t *testing.T) {
 
 	defer func() {
 		for i := range test_books {
-			log.Println(len(test_books))
 			(test_books[i]).Delete(connection.GetSession())
 		}
 	}()
