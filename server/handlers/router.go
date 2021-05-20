@@ -53,7 +53,7 @@ var GetBooksByFilterHandler = func(w http.ResponseWriter, r *http.Request) {
 
 	books, err := GetBooks(&filter)
 	if err != nil {
-		textResponse(w, http.StatusGone, []byte("Server error"))
+		textResponse(w, http.StatusInternalServerError, []byte("Server error"))
 		return
 	}
 
@@ -100,7 +100,7 @@ var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := []byte(strconv.FormatInt(int64(book.Id), 10))
-	textResponse(w, http.StatusBadRequest, id)
+	textResponse(w, http.StatusOK, id)
 }
 
 // DeleteBookHandler is http handler for DELETE /books/{id:[0-9]+}
