@@ -2,7 +2,9 @@ version: "3.7"
 
 services:
     go_app:
-        build: ./server
+        build:
+            context: .
+            dockerfile: Dockerfile.server
         ports: 
             - 3000:3000
         volumes: 
@@ -18,13 +20,12 @@ services:
             - inner_host
     
     db:
-        image: mysql:latest
+        build:
+            context: .
+            dockerfile: Dockerfile.database
         container_name: mysql_docker
         volumes:
             - book_store_mysql_data:/var/lib/mysql
-        environment:
-            MYSQL_ROOT_PASSWORD: pseudo_pass
-            MYSQL_DATABASE: book_store
         networks: 
             - inner_host
 networks:
