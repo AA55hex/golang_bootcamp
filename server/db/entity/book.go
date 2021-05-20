@@ -18,6 +18,10 @@ type Book struct {
 // with db requests
 // Returns nil on success
 func (b *Book) Validate(session db.Session) error {
+	if session == nil {
+		return errors.New("session is nil")
+	}
+
 	// is not unique
 	books := session.Collection("book")
 	genres := session.Collection("genre")
@@ -61,6 +65,9 @@ func (b *Book) SimpleValidate() error {
 // object with data from the newly inserted row
 // Returns nil on success
 func (b *Book) Insert(session db.Session) error {
+	if session == nil {
+		return errors.New("session is nil")
+	}
 
 	if err := b.SimpleValidate(); err != nil {
 		return errors.New("insert validation failed: " + err.Error())
@@ -79,6 +86,10 @@ func (b *Book) Insert(session db.Session) error {
 // to update book object in database
 // Returns nil on success
 func (b *Book) Update(session db.Session) error {
+	if session == nil {
+		return errors.New("session is nil")
+	}
+
 	books := session.Collection("book")
 
 	res := books.Find(db.Cond{"id": b.Id})
@@ -106,6 +117,10 @@ func (b *Book) Update(session db.Session) error {
 // Validate and trying to delete book object from database
 // Returns nil on success
 func (b *Book) Delete(session db.Session) error {
+	if session == nil {
+		return errors.New("session is nil")
+	}
+
 	books := session.Collection("book")
 
 	res := books.Find(db.Cond{"id": b.Id})
@@ -127,6 +142,10 @@ func (b *Book) Delete(session db.Session) error {
 // Finds book by id
 // Returns book, nil on success
 func GetBook(book_id int32, session db.Session) (*Book, error) {
+	if session == nil {
+		return nil, errors.New("session is nil")
+	}
+
 	books := session.Collection("book")
 	result := &Book{}
 
@@ -138,7 +157,19 @@ func GetBook(book_id int32, session db.Session) (*Book, error) {
 }
 
 func DeleteBook(book_id int32, session db.Session) error {
+	if session == nil {
+		return errors.New("session is nil")
+	}
+
 	book := Book{Id: int32(book_id)}
 	err := book.Delete(session)
 	return err
+}
+
+func BookEqual(l *Book, r *Book) bool {
+	return l.Id == r.Id &&
+		*l.Name == *r.Name &&
+		*l.Price == *r.Price &&
+		*l.Genre == *r.Genre &&
+		*l.Amount == *r.Amount
 }
