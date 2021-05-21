@@ -45,26 +45,31 @@ func (f *BookFilter) Parse(filters FilterMap) error {
 	return nil
 }
 
+func parseFloat32(filters FilterMap, key string) (*float32, bool) {
+	if filters[key] != "" {
+		buff64, err := strconv.ParseFloat(filters[key], 32)
+
+		if err != nil {
+			return nil, false
+		}
+		buff32 := float32(buff64)
+		return &buff32, true
+	}
+	return nil, true
+}
+
 // Parse into structure filter parameters
 // Returns nil on success
 func (p *PriceFilter) Parse(filters FilterMap) error {
-	if filters["minPrice"] != "" {
-		minPrice, err := strconv.ParseFloat(filters["minPrice"], 32)
-
-		if err != nil {
-			return errors.New("bad minPrice")
-		}
-		buff := float32(minPrice)
-		p.minPrice = &buff
+	var ok bool
+	p.minPrice, ok = parseFloat32(filters, "minPrice")
+	if !ok {
+		return errors.New("bad minPrice")
 	}
 
-	if filters["maxPrice"] != "" {
-		maxPrice, err := strconv.ParseFloat(filters["maxPrice"], 32)
-		if err != nil {
-			return errors.New("bad maxPrice")
-		}
-		buff := float32(maxPrice)
-		p.maxPrice = &buff
+	p.maxPrice, ok = parseFloat32(filters, "maxPrice")
+	if !ok {
+		return errors.New("bad maxPrice")
 	}
 
 	return nil
