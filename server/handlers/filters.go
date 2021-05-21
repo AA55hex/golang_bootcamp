@@ -56,7 +56,6 @@ func (p *PriceFilter) Parse(filters FilterMap) error {
 		}
 		buff := float32(minPrice)
 		p.minPrice = &buff
-
 	}
 
 	if filters["maxPrice"] != "" {
@@ -96,9 +95,9 @@ func GetBooks(filter *BookFilter) ([]entity.Book, error) {
 			*filter.Price.minPrice,
 			*filter.Price.maxPrice)
 	case filter.Price.minPrice != nil && filter.Price.maxPrice == nil:
-		query = query.And("price > ?", *filter.Price.minPrice)
+		query = query.And("price >= ?", *filter.Price.minPrice)
 	case filter.Price.minPrice == nil && filter.Price.maxPrice != nil:
-		query = query.And("price < ?", *filter.Price.maxPrice)
+		query = query.And("price <= ?", *filter.Price.maxPrice)
 	}
 
 	var result []entity.Book
