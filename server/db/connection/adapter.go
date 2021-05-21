@@ -5,6 +5,7 @@ import (
 	"github.com/upper/db/v4/adapter/mysql"
 )
 
+// created for testing
 type i_adapter interface {
 	Open(connURL db.ConnectionURL) (db.Session, error)
 }
