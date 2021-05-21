@@ -281,16 +281,16 @@ func TestGetBooksByFilterHandler(t *testing.T) {
 
 	get_expected := func(name string, lp *float32, rp *float32, genre *int) (result map[string]bool) {
 		result = map[string]bool{}
-		name_test := name != ""
-		lp_test := lp != nil
-		rp_test := rp != nil
-		genre_test := genre != nil
+		name_test := name == ""
+		lp_test := lp == nil
+		rp_test := rp == nil
+		genre_test := genre == nil
 		for _, item := range test_books {
 			is_expected := *item.Amount != 0 &&
-				(genre_test && *item.Genre == *genre) &&
-				(name_test && *item.Name == name) &&
-				(lp_test && *item.Price >= *lp) &&
-				(rp_test && *item.Price <= *rp)
+				(genre_test || *item.Genre == *genre) &&
+				(name_test || *item.Name == name) &&
+				(lp_test || *item.Price >= *lp) &&
+				(rp_test || *item.Price <= *rp)
 
 			result[*item.Name] = is_expected
 		}
@@ -300,19 +300,21 @@ func TestGetBooksByFilterHandler(t *testing.T) {
 	test_func := func(name string, lp *float32, rp *float32, genre *int) bool {
 		req, err := http.NewRequest("GET", "/books", nil)
 		values := req.URL.Query()
-		values.Add("name", name)
+		values.Set("name", name)
 		if lp != nil {
 			lp_str := strconv.FormatFloat(float64(*lp), 'f', 6, 32)
-			values.Add("name", lp_str)
+			values.Add("minPrice", lp_str)
 		}
 		if rp != nil {
 			rp_str := strconv.FormatFloat(float64(*rp), 'f', 6, 32)
-			values.Add("name", rp_str)
+			values.Add("maxPrice", rp_str)
 		}
 		if genre != nil {
 			genre_str := strconv.FormatInt(int64(*genre), 10)
-			values.Add("name", genre_str)
+			values.Add("genre", genre_str)
 		}
+		req.URL.RawQuery = values.Encode()
+		log.Println("---------------------------------", values.Encode())
 		require.NoError(t, err, err)
 		rr := httptest.NewRecorder()
 		router.ServeHTTP(rr, req)
@@ -321,12 +323,16 @@ func TestGetBooksByFilterHandler(t *testing.T) {
 		expected := get_expected(name, lp, rp, genre)
 		actual := []entity.Book{}
 
-		json.NewDecoder(rr.Body).Decode(actual)
+		err = json.NewDecoder(rr.Body).Decode(&actual)
 
-		for i := range actual {
-			buff := *actual[i].Name
-			status, ok := expected[buff]
-			if ok && !status {
+		actual_map := map[string]bool{}
+		for _, item := range actual {
+			actual_map[*item.Name] = true
+		}
+
+		for str, exp_status := range expected {
+			_, act_ok := actual_map[str]
+			if act_ok != exp_status {
 				return false
 			}
 		}
