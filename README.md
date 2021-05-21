@@ -68,7 +68,7 @@ $ curl -XGET 'localhost:3000/books/<book_id>'
 
 ### Create book
 
-Use POST method `localhost:3000/books/new` with json body to create book.
+Use POST method for `localhost:3000/books/new` with json body to create book.
 Request can pass only if the `Content-Type` header is `application/json`.
 
 CURL request example:
@@ -78,7 +78,7 @@ $ curl -XPOST -H "Content-type: application/json" -d '{ "name": "book1", "price"
 
 ### Update book
 
-Use PUT method `localhost:3000/books/<book_id>` with json body to update book.
+Use PUT method for `localhost:3000/books/<book_id>` with json body to update book.
 Request can pass only if the `Content-Type` header is `application/json`.
 
 CURL request example:
@@ -98,7 +98,7 @@ $ curl -XDELETE 'localhost:3000/books/<book_id>'
 
 ### Get books by filter
 
-Use GET method for 
+Use GET method for: 
 ```http
 localhost:3000/books?name=<name>&minPrice=<price>&maxPrice=<price>&genre=<genre_id>
 ```
