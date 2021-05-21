@@ -63,7 +63,7 @@ If there is no book with such id It's response `404 Not found`.
 
 CURL request:
 ```bash
-$ curl -XGET 'localhost:3000/books/<book_id>'
+curl -XGET 'localhost:3000/books/<book_id>'
 ```
 
 ### Create book
@@ -73,7 +73,7 @@ Request can pass only if the `Content-Type` header is `application/json`.
 
 CURL request example:
 ```bash
-$ curl -XPOST -H "Content-type: application/json" -d '{ "name": "book1", "price": 9999, "genre": 1, "amount": 9999 }' 'localhost:3000/books/new'
+curl -XPOST -H "Content-type: application/json" -d '{ "name": "book1", "price": 9999, "genre": 1, "amount": 9999 }' 'localhost:3000/books/new'
 ```
 
 ### Update book
@@ -83,7 +83,7 @@ Request can pass only if the `Content-Type` header is `application/json`.
 
 CURL request example:
 ```bash
-$ curl -XPUT -H "Content-type: application/json" -d '{ "name": "book1", "price": 15, "genre": 2, "amount": 249 }' 'localhost:3000/books/<book_id>'
+curl -XPUT -H "Content-type: application/json" -d '{ "name": "book1", "price": 15, "genre": 2, "amount": 249 }' 'localhost:3000/books/<book_id>'
 ```
 
 ### Delete book by id
@@ -93,7 +93,7 @@ If there is no book with such id It's response StatusNotFound with error discrip
 
 CURL request:
 ```bash
-$ curl -XDELETE 'localhost:3000/books/<book_id>'
+curl -XDELETE 'localhost:3000/books/<book_id>'
 ```
 
 ### Get books by filter
@@ -107,5 +107,5 @@ All requirements are met.
 
 CURL request:
 ```bash
-$ curl -XGET 'localhost:3000/books?name=<name>&minPrice=<price>&maxPrice=<price>&genre=<genre_id>'
+curl -XGET 'localhost:3000/books?name=<name>&minPrice=<price>&maxPrice=<price>&genre=<genre_id>'
 ```
