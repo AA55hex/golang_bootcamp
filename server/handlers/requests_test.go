@@ -34,7 +34,7 @@ func init() {
 	config.LoadConfigs("../configs.env")
 	db_settings := mysql.ConnectionURL{
 		Database: config.MySQL.Database,
-		Host:     "localhost:3306",
+		Host:     config.MySQL.Host,
 		User:     config.MySQL.User,
 		Password: config.MySQL.Password,
 	}
