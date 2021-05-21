@@ -156,6 +156,8 @@ func GetBook(book_id int32, session db.Session) (*Book, error) {
 	return result, nil
 }
 
+// Delete book by id
+// Returns nil on success
 func DeleteBook(book_id int32, session db.Session) error {
 	if session == nil {
 		return errors.New("session is nil")
@@ -166,6 +168,8 @@ func DeleteBook(book_id int32, session db.Session) error {
 	return err
 }
 
+// Equals books
+// Returns true on success
 func BookEqual(l *Book, r *Book) bool {
 	return l.Id == r.Id &&
 		*l.Name == *r.Name &&
