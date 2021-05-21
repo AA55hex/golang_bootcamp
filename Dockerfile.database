@@ -1,4 +1,0 @@
-# go_db_image
-FROM mysql:latest
-ENV MYSQL_DATABASE=book_store
-ENV MYSQL_ROOT_PASSWORD=pseudo_pass
