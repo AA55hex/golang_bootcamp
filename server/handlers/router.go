@@ -17,6 +17,7 @@ const (
 	no_content   = ""
 )
 
+// for simple json responsing
 func jsonResponse(w http.ResponseWriter, httpStatus int, jsonBody interface{}) error {
 	w.WriteHeader(httpStatus)
 	w.Header().Add("Content-Type", json_content)
@@ -24,12 +25,14 @@ func jsonResponse(w http.ResponseWriter, httpStatus int, jsonBody interface{}) e
 	return err
 }
 
+// for simple text responsing
 func textResponse(w http.ResponseWriter, httpStatus int, body []byte) {
 	w.WriteHeader(httpStatus)
 	w.Header().Add("Content-Type", text_plain)
 	w.Write(body)
 }
 
+// validate Content-Type header
 func validateContent(r *http.Request, content_type string) error {
 	content := r.Header.Get("Content-Type")
 	if content != content_type {
@@ -38,6 +41,7 @@ func validateContent(r *http.Request, content_type string) error {
 	return nil
 }
 
+// trying unmarshal to book variable from request
 func tryUnmarshalBook(r *http.Request) (*entity.Book, error) {
 	if err := validateContent(r, json_content); err != nil {
 		return nil, err

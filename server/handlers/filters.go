@@ -45,6 +45,9 @@ func (f *BookFilter) Parse(filters FilterMap) error {
 	return nil
 }
 
+// (oject), nil - parsed
+// nil, nil - good return without data (map string was empty)
+// nil, err - parsing failed
 func parseFloat32(filters FilterMap, key string) (*float32, bool) {
 	if filters[key] != "" {
 		buff64, err := strconv.ParseFloat(filters[key], 32)

@@ -16,7 +16,7 @@ var session db.Session
 // Returns session, nil on success
 func OpenSession(db_settings *mysql.ConnectionURL, retries int) (db.Session, error) {
 	if session != nil {
-		return session, errors.New("Session already exists")
+		return session, errors.New("session already exists")
 	}
 	if db_settings.Options == nil {
 		db_settings.Options = make(map[string]string)
@@ -44,6 +44,7 @@ func OpenSession(db_settings *mysql.ConnectionURL, retries int) (db.Session, err
 	return session, nil
 }
 
+// Main function for getting session from another packages
 func GetSession() db.Session {
 	return session
 }

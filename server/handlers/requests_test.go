@@ -30,6 +30,7 @@ type request_tester struct {
 var books db.Collection
 var router *mux.Router
 
+// init session && create router
 func init() {
 	config.LoadConfigs("../configs.env")
 	db_settings := mysql.ConnectionURL{
@@ -53,6 +54,7 @@ func init() {
 	router.HandleFunc("/books/new", CreateBookHandler).Methods("POST")
 }
 
+// simple way for getting test book object
 func getTestBook() *entity.Book {
 	name := "ThisBookForTestsAndOnlyForTestsNotForYou!!!!!!!"
 	price := float32(10)
@@ -67,18 +69,21 @@ func getTestBook() *entity.Book {
 	return &book
 }
 
+// simple way for inserting & getting test book
 func createTestBook() (*entity.Book, error) {
 	book := getTestBook()
 	err := books.InsertReturning(book)
 	return book, err
 }
 
+// clean database from testing objects
 func clearDatabase() {
 	books := connection.GetSession().Collection("book")
 	res := books.Find(db.Cond{"name": *getTestBook().Name})
 	res.Delete()
 }
 
+// returns served response
 func serveHTTP(method string, url string, body io.Reader, content_type string) (*httptest.ResponseRecorder, error) {
 	req, err := http.NewRequest(method, url, body)
 	if content_type != "" {
@@ -203,6 +208,7 @@ func TestUpdateBookHandlerOnBadRequest(t *testing.T) {
 	require.NoError(t, err, err)
 	str_id := strconv.FormatInt(int64(book.Id), 10)
 
+	// test function to avoid code duplication
 	test_func := func() {
 		rr, err := serveHTTP("PUT", "/books/"+str_id, getBookReader(book), json_content)
 		require.NoError(t, err, err)
@@ -261,6 +267,7 @@ func makeBook(name string, price float32, genre int, amount int) *entity.Book {
 }
 func TestGetBooksByFilterHandler(t *testing.T) {
 	clearDatabase()
+	// creating test data set of 100 objects
 	const capacity = 100
 	test_books := make([]*entity.Book, 0, capacity)
 	for i := 0; i < capacity; i++ {
@@ -273,12 +280,15 @@ func TestGetBooksByFilterHandler(t *testing.T) {
 		(*buff).Insert(connection.GetSession())
 	}
 
+	// clearing after testing
 	defer func() {
 		for i := range test_books {
 			(test_books[i]).Delete(connection.GetSession())
 		}
 	}()
 
+	// create map that consist of the book names & expected status
+	// expected status = true -> book must be in returning test set
 	get_expected := func(name string, lp *float32, rp *float32, genre *int) (result map[string]bool) {
 		result = map[string]bool{}
 		name_test := name == ""
@@ -297,7 +307,9 @@ func TestGetBooksByFilterHandler(t *testing.T) {
 		return
 	}
 
+	// function for testing filtering
 	test_func := func(name string, lp *float32, rp *float32, genre *int) bool {
+		// creating request
 		req, err := http.NewRequest("GET", "/books", nil)
 		values := req.URL.Query()
 		values.Set("name", name)
@@ -314,21 +326,24 @@ func TestGetBooksByFilterHandler(t *testing.T) {
 			values.Add("genre", genre_str)
 		}
 		req.URL.RawQuery = values.Encode()
-		require.NoError(t, err, err)
+		// serving
 		rr := httptest.NewRecorder()
 		router.ServeHTTP(rr, req)
 		require.NoError(t, err, err)
 
 		expected := get_expected(name, lp, rp, genre)
-		actual := []entity.Book{}
 
+		// creating actual slice
+		actual := []entity.Book{}
 		err = json.NewDecoder(rr.Body).Decode(&actual)
 
+		// creating actual map for more simpler validation
 		actual_map := map[string]bool{}
 		for _, item := range actual {
 			actual_map[*item.Name] = true
 		}
 
+		// validate
 		for str, exp_status := range expected {
 			_, act_ok := actual_map[str]
 			if act_ok != exp_status {
@@ -338,6 +353,7 @@ func TestGetBooksByFilterHandler(t *testing.T) {
 		return true
 	}
 
+	// testing
 	var status bool
 	params := struct {
 		name  string
