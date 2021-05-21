@@ -14,7 +14,7 @@ import (
 // Returns nil on success
 func TryMigrate(migrations_source string) error {
 	if session == nil {
-		return errors.New("Session not created")
+		return errors.New("session not created")
 	}
 
 	log.Println("Starting migrations")
@@ -29,7 +29,6 @@ func TryMigrate(migrations_source string) error {
 		return err
 	}
 
-	err = m.Up()
 	switch err = m.Up(); err {
 	case nil:
 		log.Println("Migrations executed")
