@@ -21,7 +21,7 @@ var Server struct {
 	Address string
 }
 
-// simple func for setting env variable into string variable
+// setting env variable into string variable
 func setEnvString(env_var *string, env_string string, default_string string) {
 	var ok bool
 	*env_var, ok = os.LookupEnv(env_string)
@@ -33,7 +33,7 @@ func setEnvString(env_var *string, env_string string, default_string string) {
 	log.Println(env_string, ":\t\t", *env_var)
 }
 
-// simple func for setting env variable into int variable
+// setting env variable into int variable
 func setEnvInt(env_var *int, env_string string, default_int int) {
 	str, ok := os.LookupEnv(env_string)
 	buff, err := strconv.ParseInt(str, 10, 32)
@@ -51,6 +51,8 @@ func setEnvInt(env_var *int, env_string string, default_int int) {
 	}
 }
 
+// LoadConfigs load environment variables from file
+// to MySQL and Server sttructures
 func LoadConfigs(path string) error {
 	log.Println("Loading ", path)
 	if err := godotenv.Load(path); err != nil {
