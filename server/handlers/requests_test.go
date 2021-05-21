@@ -314,7 +314,6 @@ func TestGetBooksByFilterHandler(t *testing.T) {
 			values.Add("genre", genre_str)
 		}
 		req.URL.RawQuery = values.Encode()
-		log.Println("---------------------------------", values.Encode())
 		require.NoError(t, err, err)
 		rr := httptest.NewRecorder()
 		router.ServeHTTP(rr, req)
@@ -360,12 +359,10 @@ func TestGetBooksByFilterHandler(t *testing.T) {
 	status = test_func(params.name, params.lp, params.rp, params.genre)
 	require.True(t, status, "Bad response with params: %v", params)
 
+	params.name = "only_test_book_1"
+	params.lp = nil
 	params.genre = new(int)
 	*params.genre = 2
-	status = test_func(params.name, params.lp, params.rp, params.genre)
-	require.True(t, status, "Bad response with params: %v", params)
-
-	params.name = "only_test_book_1"
 	status = test_func(params.name, params.lp, params.rp, params.genre)
 	require.True(t, status, "Bad response with params: %v", params)
 }
