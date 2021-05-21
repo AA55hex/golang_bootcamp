@@ -49,7 +49,6 @@ func setEnvInt(env_var *int, env_string string, default_int int) {
 		*env_var = int(buff)
 		log.Println(env_string, ":\t\t", buff)
 	}
-	return
 }
 
 func LoadConfigs(path string) error {
@@ -59,9 +58,9 @@ func LoadConfigs(path string) error {
 	}
 
 	setEnvString(&MySQL.Host, "MYSQL_HOST", "localhost:3306")
-	setEnvString(&MySQL.Database, "MYSQL_DB", "")
+	setEnvString(&MySQL.Database, "MYSQL_DATABASE", "")
 	setEnvString(&MySQL.User, "MYSQL_USER", "root")
-	setEnvString(&MySQL.Password, "MYSQL_PASSOWRD", "")
+	setEnvString(&MySQL.Password, "MYSQL_PASSWORD", "")
 	setEnvString(&MySQL.MigrationSource, "MIGRATION_SOURCE", "file:///migrations/")
 	setEnvString(&Server.Address, "SERVER_ADDRESS", "localhost:8000")
 
