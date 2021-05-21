@@ -62,3 +62,13 @@ func TestEnvIntOnBadEnv(t *testing.T) {
 		"Want `%v` value.\nReturns `%v` value.", req, test_buffer)
 
 }
+
+func TestLoadConfigsOnSuccess(t *testing.T) {
+	err := LoadConfigs("../configs.env")
+	require.NoError(t, err, err)
+}
+
+func TestLoadConfigOnBadPath(t *testing.T) {
+	err := LoadConfigs("//not_exist\\.env")
+	require.Error(t, err, "Expected error")
+}
