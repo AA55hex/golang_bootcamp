@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -10,16 +11,43 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	json_content = "application/json"
+	text_plain   = "text/plain"
+	no_content   = ""
+)
+
 func jsonResponse(w http.ResponseWriter, httpStatus int, jsonBody interface{}) error {
 	w.WriteHeader(httpStatus)
-	w.Header().Add("Content-Type", "application/json")
+	w.Header().Add("Content-Type", json_content)
 	err := json.NewEncoder(w).Encode(jsonBody)
 	return err
 }
 
 func textResponse(w http.ResponseWriter, httpStatus int, body []byte) {
 	w.WriteHeader(httpStatus)
+	w.Header().Add("Content-Type", text_plain)
 	w.Write(body)
+}
+
+func validateContent(r *http.Request, content_type string) error {
+	content := r.Header.Get("Content-Type")
+	if content != content_type {
+		return errors.New("Content-Type != " + content_type)
+	}
+	return nil
+}
+
+func tryUnmarshalBook(r *http.Request) (*entity.Book, error) {
+	if err := validateContent(r, json_content); err != nil {
+		return nil, err
+	}
+	book := &entity.Book{}
+	err := json.NewDecoder(r.Body).Decode(book)
+	if err != nil {
+		return nil, err
+	}
+	return book, nil
 }
 
 // GetBookByIDHandler is http handler for GET /books/{id:[0-9]+}
@@ -62,8 +90,7 @@ var GetBooksByFilterHandler = func(w http.ResponseWriter, r *http.Request) {
 
 // CreateBookHandler is http handler for POST /books/new
 var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
-	book := &entity.Book{}
-	err := json.NewDecoder(r.Body).Decode(book)
+	book, err := tryUnmarshalBook(r)
 	if err != nil {
 		textResponse(w, http.StatusBadRequest, []byte(err.Error()))
 		return
@@ -81,8 +108,7 @@ var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 
 // UpdateBookHandler is http handler for PUT /books/{id:[0-9]+}
 var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
-	book := &entity.Book{}
-	err := json.NewDecoder(r.Body).Decode(book)
+	book, err := tryUnmarshalBook(r)
 	if err != nil {
 		textResponse(w, http.StatusBadRequest, []byte(err.Error()))
 		return

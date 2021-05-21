@@ -79,8 +79,11 @@ func clearDatabase() {
 	res.Delete()
 }
 
-func serveHTTP(method string, url string, body io.Reader) (*httptest.ResponseRecorder, error) {
+func serveHTTP(method string, url string, body io.Reader, content_type string) (*httptest.ResponseRecorder, error) {
 	req, err := http.NewRequest(method, url, body)
+	if content_type != "" {
+		req.Header.Add("Content-Type", content_type)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +99,7 @@ func TestGetBookByIdRequestOnSuccess(t *testing.T) {
 
 	str_id := strconv.FormatInt(int64(book.Id), 10)
 
-	rr, err := serveHTTP("GET", "/books/"+str_id, nil)
+	rr, err := serveHTTP("GET", "/books/"+str_id, nil, no_content)
 	require.NoError(t, err, err)
 
 	require.Equal(t, rr.Code, http.StatusFound,
@@ -119,7 +122,7 @@ func TestGetBookByIdRequestOnNotFound(t *testing.T) {
 	str_id := strconv.FormatInt(int64(book.Id), 10)
 	book.Delete(connection.GetSession())
 
-	rr, err := serveHTTP("GET", "/books/"+str_id, nil)
+	rr, err := serveHTTP("GET", "/books/"+str_id, nil, no_content)
 	require.NoError(t, err, err)
 
 	require.Equal(t, rr.Code, http.StatusNotFound,
@@ -130,7 +133,7 @@ func TestCreateBookHandlerOnSuccess(t *testing.T) {
 	clearDatabase()
 	const testBookJSON = `{ "name": "ThisBookForTestsAndOnlyForTestsNotForYou!!!!!!!", "price": 9999, "genre": 1, "amount": 9999 }`
 	reader := strings.NewReader(testBookJSON)
-	rr, err := serveHTTP("POST", "/books/new", reader)
+	rr, err := serveHTTP("POST", "/books/new", reader, json_content)
 	require.NoError(t, err, err)
 
 	require.Equal(t, rr.Code, http.StatusCreated,
@@ -154,7 +157,7 @@ func TestCreateBookHandlerOnBadRequest(t *testing.T) {
 	clearDatabase()
 	const jsonBadBody = `{ "price": 9999, "genre": 1, "amount": 9999 }`
 	reader := strings.NewReader(jsonBadBody)
-	rr, err := serveHTTP("POST", "/books/new", reader)
+	rr, err := serveHTTP("POST", "/books/new", reader, json_content)
 	require.NoError(t, err, err)
 
 	require.Equal(t, rr.Code, http.StatusBadRequest,
@@ -175,7 +178,7 @@ func TestUpdateBookHandlerOnSuccess(t *testing.T) {
 	book.Id = book.Id + 1
 	*book.Price = 0
 
-	rr, err := serveHTTP("PUT", "/books/"+str_id, getBookReader(book))
+	rr, err := serveHTTP("PUT", "/books/"+str_id, getBookReader(book), json_content)
 	require.NoError(t, err, err)
 
 	require.Equal(t, rr.Code, http.StatusOK,
@@ -201,7 +204,7 @@ func TestUpdateBookHandlerOnBadRequest(t *testing.T) {
 	str_id := strconv.FormatInt(int64(book.Id), 10)
 
 	test_func := func() {
-		rr, err := serveHTTP("PUT", "/books/"+str_id, getBookReader(book))
+		rr, err := serveHTTP("PUT", "/books/"+str_id, getBookReader(book), json_content)
 		require.NoError(t, err, err)
 
 		require.Equal(t, rr.Code, http.StatusBadRequest,
@@ -226,7 +229,7 @@ func TestDeleteBookHandlerOnSuccess(t *testing.T) {
 	require.NoError(t, err, err)
 	str_id := strconv.FormatInt(int64(book.Id), 10)
 
-	rr, err := serveHTTP("DELETE", "/books/"+str_id, nil)
+	rr, err := serveHTTP("DELETE", "/books/"+str_id, nil, text_plain)
 	require.NoError(t, err, err)
 
 	require.Equal(t, rr.Code, http.StatusNoContent,
@@ -240,7 +243,7 @@ func TestDeleteBookHandlerOnNotFound(t *testing.T) {
 	str_id := strconv.FormatInt(int64(book.Id), 10)
 	book.Delete(connection.GetSession())
 
-	rr, err := serveHTTP("DELETE", "/books/"+str_id, nil)
+	rr, err := serveHTTP("DELETE", "/books/"+str_id, nil, text_plain)
 	require.NoError(t, err, err)
 
 	require.Equal(t, rr.Code, http.StatusNotFound,
