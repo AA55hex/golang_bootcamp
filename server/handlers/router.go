@@ -55,7 +55,7 @@ func tryUnmarshalBook(r *http.Request) (*entity.Book, error) {
 }
 
 // GetBookByIDHandler is http handler for GET /books/{id:[0-9]+}
-var GetBookByIDHandler = func(w http.ResponseWriter, r *http.Request) {
+func GetBookByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)
 	book, _ := entity.GetBook(int32(book_id), connection.GetSession())
@@ -68,7 +68,7 @@ var GetBookByIDHandler = func(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetBooksByFilterHandler is http handler for GET /books with filtres
-var GetBooksByFilterHandler = func(w http.ResponseWriter, r *http.Request) {
+func GetBooksByFilterHandler(w http.ResponseWriter, r *http.Request) {
 	// Getting and parsing filters
 	filters := FilterMap{}
 	var filter BookFilter
@@ -93,7 +93,7 @@ var GetBooksByFilterHandler = func(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateBookHandler is http handler for POST /books/new
-var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
+func CreateBookHandler(w http.ResponseWriter, r *http.Request) {
 	book, err := tryUnmarshalBook(r)
 	if err != nil {
 		textResponse(w, http.StatusBadRequest, []byte(err.Error()))
@@ -111,7 +111,7 @@ var CreateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateBookHandler is http handler for PUT /books/{id:[0-9]+}
-var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
+func UpdateBookHandler(w http.ResponseWriter, r *http.Request) {
 	book, err := tryUnmarshalBook(r)
 	if err != nil {
 		textResponse(w, http.StatusBadRequest, []byte(err.Error()))
@@ -133,7 +133,7 @@ var UpdateBookHandler = func(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteBookHandler is http handler for DELETE /books/{id:[0-9]+}
-var DeleteBookHandler = func(w http.ResponseWriter, r *http.Request) {
+func DeleteBookHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	book_id, _ := strconv.ParseInt(vars["id"], 10, 32)
 	err := entity.DeleteBook(int32(book_id), connection.GetSession())
