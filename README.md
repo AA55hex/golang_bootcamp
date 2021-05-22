@@ -30,6 +30,8 @@ The main package is used for configure and starting server.
 
 All requirements are met.
 
+The migration scripts are located in the `/server/db/migrations`. They are checked automatically every time the server starts.
+
 ## Install
 
 With a [correctly configured](https://golang.org/doc/install#testing) Go toolchain:
