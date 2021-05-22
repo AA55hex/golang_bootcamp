@@ -10,7 +10,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-// Trying to execute migration scripts from migrations_source
+// TryMigrate trying to execute migration scripts from migrations_source
 // Returns nil on success
 func TryMigrate(migrations_source string) error {
 	if session == nil {

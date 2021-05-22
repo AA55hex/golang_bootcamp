@@ -12,6 +12,7 @@ import (
 // using for BookFilter parsing
 type FilterMap map[string]string
 
+// PriceFilter is filter with min & max values of price
 type PriceFilter struct {
 	minPrice *float32
 	maxPrice *float32

@@ -6,6 +6,7 @@ import (
 	"github.com/upper/db/v4"
 )
 
+// Book is main structure for interaction with database
 type Book struct {
 	Id     int32    `json:"id" db:"id,omitempty"`
 	Name   *string  `json:"name" db:"name"`
@@ -14,7 +15,7 @@ type Book struct {
 	Amount *int     `json:"amount" db:"amount"`
 }
 
-// Full validate book for insertion to db
+// Validate full validate book for insertion to db
 // with db requests
 // Returns nil on success
 func (b *Book) Validate(session db.Session) error {
@@ -43,7 +44,7 @@ func (b *Book) Validate(session db.Session) error {
 	return err
 }
 
-// Validation without db requests
+// SimpleValidate validation without db requests
 // Returns nil on success
 func (b *Book) SimpleValidate() error {
 	switch {
@@ -60,7 +61,7 @@ func (b *Book) SimpleValidate() error {
 	}
 }
 
-// Perform simple validation and trying to insert book object in database
+// Insert perform simple validation and trying to insert book object in database
 // If the operation succeeds, updates current
 // object with data from the newly inserted row
 // Returns nil on success
@@ -82,7 +83,7 @@ func (b *Book) Insert(session db.Session) error {
 	return nil
 }
 
-// Perform simple validation and trying
+// Update perform simple validation and trying
 // to update book object in database
 // Returns nil on success
 func (b *Book) Update(session db.Session) error {
@@ -114,7 +115,7 @@ func (b *Book) Update(session db.Session) error {
 	return nil
 }
 
-// Validate and trying to delete book object from database
+// Delete validate and trying to delete book object from database
 // Returns nil on success
 func (b *Book) Delete(session db.Session) error {
 	if session == nil {
@@ -139,7 +140,7 @@ func (b *Book) Delete(session db.Session) error {
 	return nil
 }
 
-// Finds book by id
+// GetBook finds book by id
 // Returns book, nil on success
 func GetBook(book_id int32, session db.Session) (*Book, error) {
 	if session == nil {
@@ -156,7 +157,7 @@ func GetBook(book_id int32, session db.Session) (*Book, error) {
 	return result, nil
 }
 
-// Delete book by id
+// DeleteBook delete book by id
 // Returns nil on success
 func DeleteBook(book_id int32, session db.Session) error {
 	if session == nil {
@@ -168,7 +169,7 @@ func DeleteBook(book_id int32, session db.Session) error {
 	return err
 }
 
-// Equals books
+// BookEqual equals books
 // Returns true on success
 func BookEqual(l *Book, r *Book) bool {
 	return l.Id == r.Id &&
